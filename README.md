@@ -14,12 +14,12 @@ It includes:
 
 This project is ideal for learning **containerization**, **orchestration**, and **Kubernetes basics**.
 
-# Prerequisites
+## Prerequisites
 - JDK 11 
 - Maven 3 
 - MySQL 8
 
-# Technologies 
+## Technologies 
 - Spring MVC
 - Spring Security
 - Spring Data JPA
@@ -31,7 +31,7 @@ This project is ideal for learning **containerization**, **orchestration**, and 
 - Rabbitmq
 - ElasticSearch
   
-# Database
+## Database
 Here,we used Mysql DB 
 sql dump file:
 - /src/main/resources/db_backup.sql
