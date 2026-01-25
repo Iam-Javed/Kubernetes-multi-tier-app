@@ -116,6 +116,7 @@ Use multi-stage Docker builds for optimized images
 
 # Author
 Javed Shaik
+
 DevOps Project | Kubernetes | Docker | Java | DevOps
 
 
