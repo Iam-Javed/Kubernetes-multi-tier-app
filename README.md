@@ -105,9 +105,13 @@ Use the Ingress LoadBalancer external IP to access the app in a browser
 ## Learning Points
 
 Understand multi-tier architecture
+
 Learn containerization with Docker
+
 Deploy applications on Kubernetes
+
 Configure services, volumes, and ingress
+
 Use multi-stage Docker builds for optimized images
 
 # Author
