@@ -13,7 +13,6 @@
 <img width="1353" height="663" alt="image" src="https://github.com/user-attachments/assets/6e060c65-ee21-4514-95dc-19c6db5ff7d3" />
 
 # Prerequisites
-#
 - JDK 11 
 - Maven 3 
 - MySQL 8
@@ -37,198 +36,79 @@ sql dump file:
 - > mysql -u <user_name> -p accounts < db_backup.sql
 
 
-Perfect! Based on all the data you’ve shared — your project includes **Docker multi-stage builds, a multi-tier architecture (App, DB, Cache, MQ, Web), Kubernetes manifests, and Ingress setup** — I’ve drafted a **comprehensive `README.md`** for your GitHub repository. You can copy this as-is and tweak if needed.
-
----
-
-```markdown
-# Kubernetes Multi-Tier Application: VProfile
+# VProfile: Multi-Tier Kubernetes Application
 
 ## Overview
 
-**VProfile** is a multi-tier web application built using **Java (Spring/Maven)**, containerized with **Docker**, and orchestrated using **Kubernetes**. This project demonstrates a full-stack deployment including:
+**VProfile** is a full-stack web application demonstrating a **multi-tier architecture** deployed using **Docker** and **Kubernetes**.  
 
-- **Application tier** – Tomcat running the Java WAR file
-- **Database tier** – MySQL
-- **Cache tier** – Memcached
-- **Message Queue** – RabbitMQ
-- **Web tier / Frontend** – Nginx
-- **Ingress** – For routing external traffic
+It includes:  
+- **Application Tier** – Java web app running on Tomcat  
+- **Database Tier** – MySQL  
+- **Cache Tier** – Memcached  
+- **Message Queue** – RabbitMQ  
+- **Web Tier** – Nginx for frontend and reverse proxy  
+- **Ingress** – Handles routing external traffic to the application  
 
-The project uses **multi-stage Docker builds** to optimize image size and **Kubernetes manifests** for deployments, services, volumes, and ingress routing.
+This project is ideal for learning **containerization**, **orchestration**, and **Kubernetes basics**.
 
----
 
 ## Project Structure
 
-```
-
 Kube-Project/
-│
-├── Docker-files/
-│   ├── app/                  # Application Dockerfile (multi-stage)
-│   ├── db/                   # MySQL Dockerfile
-│   ├── web/                  # Nginx Dockerfile
-│
-├── kubedefs/                 # Kubernetes manifests
-│   ├── appdeploy.yaml        # Deployment for application tier
-│   ├── dbdeploy.yaml         # Deployment for database tier
-│   ├── cachedeploy.yaml      # Deployment for Memcached
-│   ├── mqdeploy.yaml         # Deployment for RabbitMQ
-│   ├── appingress.yaml       # Ingress resource
-│   ├── services.yaml         # Services for all tiers
-│
-├── src/                      # Java application source code
-├── target/                   # Maven build output
-├── pom.xml                   # Maven project file
-├── docker-compose.yml        # Local Docker Compose setup
-├── Jenkinsfile               # Optional CI/CD pipeline
-└── README.md                 # Project documentation
 
-````
+├── Docker-files/ # Dockerfiles for each tier
 
----
+├── kubedefs/ # Kubernetes deployment, services, ingress
 
-## Prerequisites
+├── src/ # Java application source code
 
-- **Docker** >= 20.x
-- **Docker Compose** >= 2.x
-- **Minikube / Kind / AWS EKS** for Kubernetes
-- **kubectl** CLI
-- **Helm** (optional, if using charts)
-- **Git** configured with SSH
+├── target/ # Compiled application (WAR file)
 
----
+├── pom.xml # Maven project file
 
-## Docker Setup
+├── docker-compose.yml # Local Docker Compose setup
 
-### Build all Docker images
+└── README.md # Project documentation
 
-```bash
-# Build locally using Docker Compose
+
+## Key Concepts
+
+1. **Docker**: Containerizes each component (app, database, cache, web).  
+2. **Multi-stage builds**: Compile Java app in one image, run it in Tomcat image for smaller size.  
+3. **Kubernetes**: Orchestrates deployment, scaling, and networking of all containers.  
+4. **Ingress**: Exposes the application externally without needing a domain name.  
+
+
+## How to Run
+
+### Using Docker Compose (Local Testing)
+
 docker compose build
-````
-
-### Run locally with Docker Compose
-
-```bash
 docker compose up -d
-```
+Access the app at http://localhost:8080
 
-* App runs on: `http://localhost:8080`
-* Web (Nginx) runs on: `http://localhost:80`
+Nginx frontend at http://localhost:80
 
+## Using Kubernetes
 
-## Kubernetes Setup
-
-### Apply Kubernetes resources
-
-```bash
-# Create namespaces (if needed)
-kubectl create namespace vprofile
-
-# Apply deployments
 kubectl apply -f kubedefs/
-
-# Check pods
 kubectl get pods
-
-# Check services
 kubectl get svc
-
-# Check ingress
 kubectl get ingress
-```
+Use the Ingress LoadBalancer external IP to access the app in a browser
 
-### Ingress Access without DNS
+## Learning Points
 
-If you don’t have a domain:
+Understand multi-tier architecture
+Learn containerization with Docker
+Deploy applications on Kubernetes
+Configure services, volumes, and ingress
+Use multi-stage Docker builds for optimized images
 
-1. Use the **external IP** of your ingress controller’s LoadBalancer:
-
-```bash
-kubectl get svc -n ingress-nginx
-```
-
-2. Open the URL in browser:
-
-```
-http://<EXTERNAL-IP>/
-```
-
-> Example: `http://aa995e5023b354ce4ab1d6f601956b33-bfa3b4ee87c7dace.elb.us-east-1.amazonaws.com`
-
----
-
-## Application Architecture
-
-* **vproapp** – Tomcat application container hosting `vprofile-v2.war`
-* **vprodb** – MySQL database container
-* **vprocache01** – Memcached caching layer
-* **vpromq01** – RabbitMQ messaging
-* **vproweb** – Nginx container for frontend and reverse proxy
-* **Ingress** – Routing external traffic to `vproapp-service`
-
-**Volumes:**
-
-* `vprodbdata` – Persistent volume for MySQL data
-* `vproappdata` – Persistent volume for application webapps
-
----
-
-## Multi-stage Dockerfile
-
-The application Dockerfile uses **Maven build stage** to compile the WAR and **Tomcat runtime stage** to run it:
-
-```dockerfile
-FROM maven:3.9.9-eclipse-temurin-21-jammy AS BUILD_IMAGE
-RUN git clone https://github.com/hkhcoder/vprofile-project.git
-RUN cd vprofile-project && git checkout docker && mvn install
-
-FROM tomcat:10-jdk21
-RUN rm -rf /usr/local/tomcat/webapps/*
-COPY --from=BUILD_IMAGE vprofile-project/target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
-EXPOSE 8080
-CMD ["catalina.sh", "run"]
-```
-
----
-
-## Push Docker Images to Registry
-
-```bash
-# Login to your registry
-docker login <your-registry>
-
-# Tag image
-docker tag misterj25/vprofileapp <your-registry>/vprofileapp:latest
-
-# Push image
-docker push <your-registry>/vprofileapp:latest
-```
-
-## GitHub Repository
-
-This project is configured to be pushed via SSH:
-
-```bash
-# Add SSH remote
-git remote set-url origin git@github.com:Iam-Javed/Kubernetes-multi-tier-app.git
-
-# Push to GitHub
-git push -u origin main
-```
-
-## Notes
-
-* Ensure all Kubernetes `Service` names match your **Deployment** `initContainers` for proper DNS resolution.
-* The `imagePullPolicy: Always` ensures latest Docker images are pulled when deploying to K8s.
-* Remove obsolete `version` from Docker Compose YAML to avoid warnings.
-
-## Author
-
-**Javed Shaik**
-VProfile Project | Kubernetes | Docker | Java | DevOps
+# Author
+Javed Shaik
+DevOps Project | Kubernetes | Docker | Java | DevOps
 
 
 
