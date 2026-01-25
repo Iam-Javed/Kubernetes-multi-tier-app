@@ -87,8 +87,6 @@ kubectl get ingress
 
 Use the Ingress LoadBalancer external IP to access the app in a browser
 
-<img width="1037" height="545" alt="image" src="https://github.com/user-attachments/assets/97a47fd1-2a56-42c5-8bf3-91bbf398855d" />
-
 <img width="1349" height="681" alt="image" src="https://github.com/user-attachments/assets/99b324e4-a2b5-4b4e-b23f-73f28e705fdb" />
 
 <img width="1338" height="636" alt="image" src="https://github.com/user-attachments/assets/c3240a86-16b3-4dcf-bb25-6814cf891b90" />
@@ -112,6 +110,8 @@ Use the Ingress LoadBalancer external IP to access the app in a browser
 <img width="1054" height="426" alt="image" src="https://github.com/user-attachments/assets/9b0cb5c7-62bd-4fdb-a4d6-4163aa200f37" />
 
 <img width="699" height="370" alt="image" src="https://github.com/user-attachments/assets/b9d0342c-a90f-4bc0-a24f-4a9507ba5763" />
+
+<img width="1037" height="545" alt="image" src="https://github.com/user-attachments/assets/97a47fd1-2a56-42c5-8bf3-91bbf398855d" />
 
 
 ## Learning Points
