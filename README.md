@@ -41,19 +41,12 @@ sql dump file:
 ## Project Structure
 
 Kube-Project/
-
 ├── Docker-files/ # Dockerfiles for each tier
-
 ├── kubedefs/ # Kubernetes deployment, services, ingress
-
 ├── src/ # Java application source code
-
 ├── target/ # Compiled application (WAR file)
-
 ├── pom.xml # Maven project file
-
 ├── docker-compose.yml # Local Docker Compose setup
-
 └── README.md # Project documentation
 
 
