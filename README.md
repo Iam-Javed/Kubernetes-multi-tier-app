@@ -70,7 +70,9 @@ Kube-Project/
 ### Using Docker Compose (Local Testing)
 
 docker compose build
+
 docker compose up -d
+
 Access the app at http://localhost:8080
 
 Nginx frontend at http://localhost:80
