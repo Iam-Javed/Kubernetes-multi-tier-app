@@ -93,9 +93,13 @@ Nginx frontend at http://localhost:80
 ## Using Kubernetes
 
 kubectl apply -f kubedefs/
+
 kubectl get pods
+
 kubectl get svc
+
 kubectl get ingress
+
 Use the Ingress LoadBalancer external IP to access the app in a browser
 
 ## Learning Points
