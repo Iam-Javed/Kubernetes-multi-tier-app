@@ -10,7 +10,7 @@ on:
   path:
     - src/**
     - Docker-files/**
-    - docker-compose.yaml
+    - docker-compose.yml
   
   schedule:
     - corn: '12 * * * *'
