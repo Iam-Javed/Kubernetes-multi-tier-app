@@ -36,3 +36,25 @@ jobs:
       - name: Notify if build fails
         if: failure()
         run: echo "Build Job failed! Please check logs for the details"
+
+  Testing:
+    runs-on: ubuntu-latest
+    needs: BUILD
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vprofile-app
+      - name: Run tests
+        run: mvn test
+      - name: checkstyle
+        run: mvn checkstyle:check
+
+      - name: Notify if test fails
+        if: failure()
+        run: echo "Test Job failed! Please check logs for the details"
