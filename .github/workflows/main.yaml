@@ -1,0 +1,38 @@
+#Building a workflow pipeline for this multi tier project
+
+name: K8S multitier workflow
+
+on:
+  push:
+    branches:
+      - main
+  
+  path:
+    - src/**
+    - Docker-files/**
+    - docker-compose.yaml
+  
+  schedule:
+    - corn: '12 * * * *'
+
+  workflow_dispatch:
+
+jobs:
+  BUILD:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v4
+
+      - name: Install Maven
+        uses: mvn Install
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vprofile-app
+          path: target/*.war
+
+      - name: Notify if build fails
+        if: failure()
+        run: echo "Build Job failed! Please check logs for the details"
