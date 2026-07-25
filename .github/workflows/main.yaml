@@ -120,13 +120,20 @@ jobs:
 
       - name: Build and Push Images
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest -f Docker-files/app/multistage/Dockerfile .
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest -f Docker-files/web/Dockerfile .
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest -f Docker-files/db/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest -f Docker-files/app/multistage/Dockerfile Docker-files/app
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest -f Docker-files/web/Dockerfile Docker-files/web
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest -f Docker-files/db/Dockerfile Docker-files/db
           docker push ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest
 
+
       - name: Notify if deployment fails
         if: failure()
         run: echo "Deployment Job failed! Please check logs for the details"
+
+
+      - name: Run Docker Compose
+        run: |
+          docker compose -f docker-compose.yml pull
+          docker compose -f docker-compose.yml up -d
