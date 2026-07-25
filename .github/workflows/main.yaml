@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Maven
-        run: mvn Install
+        run: mvn install
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
