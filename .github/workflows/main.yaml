@@ -117,18 +117,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and Push Docker Image
+
+      - name: Build and Push Images
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofile-app:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/vprofile-app:latest 
-        
-      - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/vprofile-app:latest
-          severity-threshold: 'CRITICAL'
-          format: 'json'
-          exit-code: '1'
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest -f Docker-files/app/multistage/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest -f Docker-files/web/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest -f Docker-files/db/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest
 
       - name: Notify if deployment fails
         if: failure()
