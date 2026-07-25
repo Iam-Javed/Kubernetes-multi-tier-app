@@ -53,8 +53,10 @@ jobs:
       - name: Run tests
         run: mvn test
       - name: checkstyle
-        run: mvn checkstyle:check
+        run: mvn checkstyle:checkstyle
 
       - name: Notify if test fails
         if: failure()
         run: echo "Test Job failed! Please check logs for the details"
+
+      
