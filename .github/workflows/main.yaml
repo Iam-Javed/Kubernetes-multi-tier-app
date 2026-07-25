@@ -7,12 +7,10 @@ on:
     branches:
       - main
 
-  path:
-    - '**.java'
-    - '**.xml'
-    - '**.yml'
-    - '**.yaml'
-    - '**.properties'
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/main.yaml'
   
   schedule:
     - cron: '12 * * * *'
