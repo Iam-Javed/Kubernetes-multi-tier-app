@@ -2,6 +2,7 @@
 
 name: K8S multitier workflow
 
+# This workflow is triggered on push to main branch, on schedule and also can be triggered manually.
 on:
   push:
     branches:
@@ -17,8 +18,10 @@ on:
 
   workflow_dispatch:
 
+# This workflow contains a build job, test job, security scan job and deploy job.
 jobs:
-  BUILD:
+  BUILD: 
+  # clone the code and build the package using maven and upload the artifact to be used in next job
     runs-on: ubuntu-latest
     steps:
       - name: code checkout
@@ -36,7 +39,8 @@ jobs:
       - name: Notify if build fails
         if: failure()
         run: echo "Build Job failed! Please check logs for the details"
-
+  
+  # Test job will run after build job is successful. It will download the artifact from build job and run the tests and checkstyle.
   Testing:
     runs-on: ubuntu-latest
     needs: BUILD
@@ -59,6 +63,7 @@ jobs:
         if: failure()
         run: echo "Test Job failed! Please check logs for the details"
 
+ # Security scan job will run after test job is successful. It will run trivy scan on the code and generate a report.
   Security_Scan:
     runs-on: ubuntu-latest
     needs: Testing
@@ -67,6 +72,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Resolve Maven dependencies
+        run: mvn dependency:resolve
 
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@master
@@ -84,7 +100,8 @@ jobs:
         with:
           name: trivy-report
           path: trivy-report.json
-
+          
+ # Deploy job will run after security scan job is successful. It will build the docker image and push it to docker hub and also run trivy scan on the image and generate a report.
   Deploy:
     environment: prod
     runs-on: ubuntu-latest
