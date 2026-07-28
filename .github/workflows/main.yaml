@@ -122,7 +122,7 @@ jobs:
       - name: push docker images
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/vprofiledb:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest
 
       - name: notify if fails
