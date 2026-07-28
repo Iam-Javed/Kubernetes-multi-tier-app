@@ -1,34 +1,27 @@
-#Building a workflow pipeline for this multi tier project
+#CICD workflow for the K8s multi tier app
 
-name: K8S multitier workflow
-
-# This workflow is triggered on push to main branch, on schedule and also can be triggered manually.
+name: CICD workflow for the K8s multitier app
 on:
   push:
     branches:
-      - main
+      - feature-branch
 
-    paths:
-      - 'src/**'
-      - 'pom.xml'
-      - '.github/workflows/main.yaml'
-  
   schedule:
-    - cron: '12 * * * *'
+    - cron: '12 * * * 1-5'
 
-  workflow_dispatch:
+workflow_dispatch:
 
-# This workflow contains a build job, test job, security scan job and deploy job.
+#permission: read
+
 jobs:
-  BUILD: 
-  # clone the code and build the package using maven and upload the artifact to be used in next job
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-server
     steps:
       - name: code checkout
         uses: actions/checkout@v4
-
+      
       - name: Install Maven
-        run: mvn install
+        run: mvn Install
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
@@ -36,104 +29,6 @@ jobs:
           name: vprofile-app
           path: target/*.war
 
-      - name: Notify if build fails
+      - name: notify if fails
         if: failure()
-        run: echo "Build Job failed! Please check logs for the details"
-  
-  # Test job will run after build job is successful. It will download the artifact from build job and run the tests and checkstyle.
-  Testing:
-    runs-on: ubuntu-latest
-    needs: BUILD
-    steps:
-      - name: code checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: vprofile-app
-      - name: Run tests
-        run: mvn test
-      - name: checkstyle
-        run: mvn checkstyle:checkstyle
-
-      - name: Notify if test fails
-        if: failure()
-        run: echo "Test Job failed! Please check logs for the details"
-
- # Security scan job will run after test job is successful. It will run trivy scan on the code and generate a report.
-  Security_Scan:
-    runs-on: ubuntu-latest
-    needs: Testing
-    steps:
-      - name: code checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Resolve Maven dependencies
-        run: mvn dependency:resolve
-
-      - name: Trivy Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-path: '.'
-          severity-threshold: 'CRITICAL'
-          format: 'json'
-          exit-code: '0'
-          vulnerability-type: 'os,library'
-          output: 'trivy-report.json'
-
-      - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report
-          path: trivy-report.json
-          
- # Deploy job will run after security scan job is successful. It will build the docker image and push it to docker hub and also run trivy scan on the image and generate a report.
-  Deploy:
-    environment: prod
-    runs-on: ubuntu-latest
-    needs: Security_Scan
-    steps:
-      - name: code checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Docker Login
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and Push Images
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest -f Docker-files/app/multistage/Dockerfile Docker-files/app
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest -f Docker-files/web/Dockerfile Docker-files/web
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest -f Docker-files/db/Dockerfile Docker-files/db
-          docker push ${{ secrets.DOCKER_USERNAME }}/vprofileapp:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/vprofileweb:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/vprofiledbd:latest
-
-
-      - name: Notify if deployment fails
-        if: failure()
-        run: echo "Deployment Job failed! Please check logs for the details"
-
-
-      - name: Run Docker Compose
-        run: |
-          docker compose -f docker-compose.yml pull
-          docker compose -f docker-compose.yml up -d
+        run: "echo build failed and for more information check logs!"
