@@ -11,7 +11,7 @@ on:
 
   workflow_dispatch:
 
-permission: read
+permissions: read
 
 jobs:
   BUILD:
