@@ -11,8 +11,6 @@ on:
 
   workflow_dispatch:
 
-permissions: read
-
 jobs:
   BUILD:
     runs-on: ubuntu-latest
