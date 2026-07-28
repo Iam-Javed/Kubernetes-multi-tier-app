@@ -9,12 +9,12 @@ on:
   schedule:
     - cron: '12 * * * 1-5'
 
-workflow_dispatch:
+  workflow_dispatch:
 
 #permission: read
 
 jobs:
-  build:
+  BUILD:
     runs-on: ubuntu-server
     steps:
       - name: code checkout
@@ -32,3 +32,19 @@ jobs:
       - name: notify if fails
         if: failure()
         run: "echo build failed and for more information check logs!"
+
+  TESTING:
+    runs-on: ubuntu-server
+    needs: BUILD
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v4
+      
+      - name: maven Test
+        run: mvn test
+
+      - name: maven checkstyle
+        run: mvn checkstyle:checkstyle
+
+      - name: notify if fails
+        run: "echo echo build failed and for more information check logs!"
